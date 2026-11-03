@@ -15,7 +15,8 @@
     "seed": "tsx scripts/seed.ts",
     "grant-platform-owner": "tsx scripts/grant-platform-owner.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "lint": "eslint src test scripts"
+    "lint": "eslint src test scripts",
+    "create-brand": "tsx scripts/create-brand.ts"
   },
   "dependencies": {
     "@retero/db": "workspace:*",

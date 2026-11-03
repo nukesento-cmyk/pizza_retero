@@ -1,26 +1,230 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   Retero design tokens — see docs/DESIGN_SYSTEM.md
+   Kitchen palette first; shadcn semantic variables are mapped onto it.
+   ========================================================================== */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-sauce: #c8402b;
+  --color-sauce-deep: #8f2a1c;
+  --color-crust: #e7a33e;
+  --color-oven: #f06a2e;
+  --color-basil: #2e6b52;
+  --color-dough: #f6ecd9;
+  --color-flour: #fbf6ec;
+  --color-tile: #e9d9bc;
+  --color-espresso: #2a1a13;
+  --color-char: #15100c;
+
+  --font-display: var(--font-shrikhand), "Cooper Black", Georgia, serif;
+  --font-menu: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-work-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-heading: var(--font-menu);
+
+  --radius-sign: 18px;
+  --radius-card: 12px;
+
+  --shadow-print: 4px 4px 0 var(--color-espresso);
+  --shadow-print-sm: 2px 2px 0 var(--color-espresso);
+
+  --ease-arrive: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --animate-flicker: flicker 3.2s ease-in-out infinite;
+  --animate-glow: glow 4s ease-in-out infinite;
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    41% { opacity: 1; }
+    42% { opacity: 0.55; }
+    43% { opacity: 1; }
+    77% { opacity: 0.92; }
+    78% { opacity: 0.7; }
+    79% { opacity: 1; }
+  }
+  @keyframes glow {
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Light = the parlour by day (also the ops default). */
+:root {
+  --radius: 0.75rem;
+  --background: var(--color-dough);
+  --foreground: var(--color-espresso);
+  --card: var(--color-flour);
+  --card-foreground: var(--color-espresso);
+  --popover: var(--color-flour);
+  --popover-foreground: var(--color-espresso);
+  --primary: var(--color-sauce);
+  --primary-foreground: var(--color-flour);
+  --secondary: var(--color-tile);
+  --secondary-foreground: var(--color-espresso);
+  --muted: #efe3cb;
+  --muted-foreground: #6b5546;
+  --accent: var(--color-crust);
+  --accent-foreground: var(--color-espresso);
+  --destructive: var(--color-sauce-deep);
+  --border: #d9c6a5;
+  --input: #d9c6a5;
+  --ring: var(--color-crust);
+}
+
+/* Dark = the parlour after hours. Brand hues stay; surfaces go to night. */
+.dark {
+  --background: var(--color-char);
+  --foreground: var(--color-dough);
+  --card: var(--color-espresso);
+  --card-foreground: var(--color-dough);
+  --popover: var(--color-espresso);
+  --popover-foreground: var(--color-dough);
+  --primary: var(--color-sauce);
+  --primary-foreground: var(--color-flour);
+  --secondary: #3a281e;
+  --secondary-foreground: var(--color-dough);
+  --muted: #2f2119;
+  --muted-foreground: #c4ad92;
+  --accent: var(--color-crust);
+  --accent-foreground: var(--color-espresso);
+  --destructive: #e0644f;
+  --border: #4a3427;
+  --input: #4a3427;
+  --ring: var(--color-crust);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  :focus-visible {
+    outline: 3px solid var(--color-crust);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Printed-paper grain. 4% noise so flat colour feels like ink on stock. */
+  .grain {
+    position: relative;
+    isolation: isolate;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* 70s racing stripe: sauce / oven / crust. */
+  .sunburst-stripes {
+    background: linear-gradient(
+      to bottom,
+      var(--color-sauce) 0 33.3%,
+      var(--color-oven) 33.3% 66.6%,
+      var(--color-crust) 66.6% 100%
+    );
+  }
+
+  .checker {
+    --c1: var(--color-tile);
+    --c2: var(--color-dough);
+    --size: 28px;
+    background-color: var(--c2);
+    background-image: conic-gradient(var(--c1) 25%, transparent 0 50%, var(--c1) 0 75%, transparent 0);
+    background-size: var(--size) var(--size);
+  }
+  .checker-night {
+    --c1: #2a1d16;
+    --c2: #1c140f;
+  }
+
+  /* Enamel sign: thick stroke, thin inner keyline, printed shadow. */
+  .enamel {
+    border-radius: var(--radius-sign);
+    border: 3px solid var(--color-espresso);
+    box-shadow:
+      inset 0 0 0 3px var(--enamel-fill, var(--color-sauce)),
+      inset 0 0 0 4.5px color-mix(in oklab, var(--color-flour) 70%, transparent),
+      var(--shadow-print);
+  }
+
+  /* Order ticket with torn zigzag bottom. */
+  .ticket {
+    --zig: 10px;
+    background: var(--color-flour);
+    color: var(--color-espresso);
+    font-family: var(--font-mono);
+    -webkit-mask:
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(var(--zig) * 2) 100%;
+    mask:
+      conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(var(--zig) * 2) 100%;
+    padding-bottom: calc(var(--zig) + 1rem);
+  }
+
+  .neon-sign {
+    color: var(--color-sauce);
+    text-shadow:
+      0 0 2px #ffd9c7,
+      0 0 10px color-mix(in oklab, var(--color-oven) 80%, transparent),
+      0 0 28px color-mix(in oklab, var(--color-sauce) 70%, transparent),
+      0 0 60px color-mix(in oklab, var(--color-sauce) 45%, transparent);
+    -webkit-text-stroke: 1px color-mix(in oklab, var(--color-crust) 60%, transparent);
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
