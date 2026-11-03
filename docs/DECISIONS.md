@@ -60,6 +60,32 @@ but needs an SMS provider configured in Supabase (Twilio/Africa's Talking via
 hook), which costs money per SMS. Email OTP ships first; phone OTP is a config
 switch once a provider is chosen. Guest checkout (P4) needs no account at all.
 
+### D-011 Branches are opened by the brand
+`branch.create` is a brand-level permission; franchise admins run their
+branches but cannot open new ones. *Trade-off:* the brand approves every new
+location (franchise control) at the cost of one extra step for franchisees.
+Flip by adding `branch.create` to `franchise_admin` (catalogue + seed).
+
+### D-012 Storefront is the 3D kitchen; Phase 6 prototype pulled forward ⚠ review
+Per `correctUI.md`, the storefront home is a walk-through 3D kitchen rather
+than stacked sections. A working prototype was built before Phases 2–5 so the
+interaction model is proven early. The previous 2D page is kept as the
+no-WebGL / simple-view fallback. See [`3D_KITCHEN.md`](./3D_KITCHEN.md).
+
+### D-013 Procedural geometry until Blender assets exist
+No Blender assets or artist yet (Q10). The prototype uses procedural R3F
+geometry and canvas textures, structured so each component maps to a planned
+GLB (3D_KITCHEN.md §5). This is a stand-in, not the final art.
+
+### D-014 Panels are DOM, anchored to 3D
+Station panels render as normal DOM positioned from projected 3D anchors,
+not inside the WebGL canvas, for accessibility, crisp text and Motion
+transitions. Only small tags use drei `<Html>`.
+
+### D-015 Local Playwright uses installed Chrome on macOS 13
+Playwright's bundled Chromium no longer supports macOS 13. Set
+`E2E_BROWSER_CHANNEL=chrome` locally; CI (Ubuntu) uses bundled Chromium.
+
 ---
 
 ## Open questions

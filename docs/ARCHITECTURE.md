@@ -99,7 +99,7 @@ pizza_retero/
 │       │   └── api/               health, webhooks (M-Pesa P4)
 │       ├── src/server/            auth adapter, actor resolution, tenant ctx
 │       ├── src/components/        ui/ (shadcn), retro/ (brand components)
-│       ├── src/kitchen/           R3F scene, stations, camera rig (P6)
+│       ├── src/kitchen/           3D kitchen: R3F scene, camera rig, stations, panels (see 3D_KITCHEN.md)
 │       └── e2e/                   Playwright
 ├── packages/
 │   ├── shared/                    money, errors, env, ids
@@ -239,7 +239,7 @@ Codes: `VALIDATION_FAILED` 400 · `UNAUTHENTICATED` 401 · `FORBIDDEN` 403 ·
 | 3 Catalogue | Products, ingredients, allergens, option groups, branch pricing/availability, **pricing engine** | Property tests on pricing; no float anywhere |
 | 4 Commerce | Cart, quotes, checkout, orders, M-Pesa STK, callbacks, reconciliation, refunds, outbox worker | Sandbox STK end to end; duplicate/delayed callback tests |
 | 5 Operations | Kitchen board, state machines, inventory movements and reservations, delivery, WhatsApp handoff | Concurrency tests on stock |
-| 6 3D | Blender pipeline, kitchen scene, camera rig, stations, LOD, fallbacks | Mobile perf budget met; no-WebGL path works |
+| 6 3D | **Prototype done early (D-012):** kitchen scene, camera rig, 8 interactive stations, fallbacks. Remaining: Blender assets, LOD, perf budget | Mobile perf budget met; no-WebGL path works |
 | 7 Customer UX | Storefront, menu, builder, accounts, tracking | Playwright purchase journey |
 | 8 Launch | Security review, perf, a11y, SEO, monitoring, backups | Launch checklist signed off |
 

@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DATABASE_URL: postgres://retero_app:retero_app_dev@localhost:5432/retero
+  DATABASE_OWNER_URL: postgres://retero_owner:retero_owner_dev@localhost:5432/retero
+  TEST_DATABASE_URL: postgres://retero_app:retero_app_dev@localhost:5432/retero_test
+  TEST_DATABASE_OWNER_URL: postgres://retero_owner:retero_owner_dev@localhost:5432/retero_test
+  APP_ENV: local
+  APP_FALLBACK_BRAND_SLUG: retero
+  AUDIT_IP_SALT: ci-only-not-secret-salt-0123456789
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_ci
+          POSTGRES_DB: retero
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 2s --health-timeout 3s --health-retries 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Bootstrap database roles
+        run: PGPASSWORD=postgres_ci psql -h localhost -U postgres -d retero -v ON_ERROR_STOP=1 -f infra/postgres/init/01-roles.sql
+
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - name: Unit + database tests (RLS, cross-tenant)
+        run: pnpm test
+      - name: Migrations are consistent with schema
+        run: pnpm --filter @retero/db check
+
+      - name: Migrate, seed, provision CI brand
+        run: |
+          pnpm db:migrate
+          pnpm db:seed
+          pnpm --filter @retero/core create-brand retero "Retero Pizza Co."
+
+      - run: pnpm build
+      - run: pnpm --filter web exec playwright install --with-deps chromium
+      - name: End-to-end (desktop + mobile, includes WebGL journey)
+        run: pnpm e2e -- --workers 1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
