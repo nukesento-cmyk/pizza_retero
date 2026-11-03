@@ -3,11 +3,14 @@
 import { ContactShadows, Lightformer, Environment, PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, Noise, Vignette } from "@react-three/postprocessing";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import * as THREE from "three";
 import { AnchorProjector } from "./AnchorProjector";
 import { CameraRig } from "./CameraRig";
 import { Chef } from "./Chef";
+import { ChefProcedural } from "./ChefProcedural";
+import { ModelBoundary } from "./ModelBoundary";
+import { OvenProcedural } from "./OvenProcedural";
 import { Oven } from "./Oven";
 import { Pizza } from "./Pizza";
 import { Room } from "./Room";
@@ -22,9 +25,17 @@ export type Quality = "high" | "low";
 export default function KitchenCanvas({ brand, initialQuality, onReady }: { brand: string; initialQuality: Quality; onReady?: () => void }) {
   const [quality, setQuality] = useState<Quality>(initialQuality);
   const high = quality === "high";
+  // Don't burn battery rendering a kitchen nobody can see.
+  const [visible, setVisible] = useState(true);
+  useEffect(() => {
+    const on = () => setVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", on);
+    return () => document.removeEventListener("visibilitychange", on);
+  }, []);
 
   return (
     <Canvas
+      frameloop={visible ? "always" : "never"}
       shadows={high ? "soft" : false}
       dpr={high ? [1, 1.75] : [1, 1.25]}
       gl={{ antialias: !high, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 0.92 }}
@@ -50,14 +61,18 @@ export default function KitchenCanvas({ brand, initialQuality, onReady }: { bran
 
       <Suspense fallback={null}>
         <Room quality={quality} />
-        <Oven quality={quality} />
+        <ModelBoundary fallback={<OvenProcedural quality={quality} />}>
+          <Oven quality={quality} />
+        </ModelBoundary>
         <Signage brand={brand} />
         <Lamps quality={quality} />
         <DoughBench />
         <SaucePots />
         <ToppingLine />
         <Pizza />
-        <Chef />
+        <ModelBoundary fallback={<ChefProcedural />}>
+          <Chef quality={quality} />
+        </ModelBoundary>
         <StationTags />
         <ContactShadows position={[0, 0.005, 0]} opacity={0.45} scale={18} blur={2.4} far={3} resolution={high ? 512 : 256} color="#15100c" />
       </Suspense>

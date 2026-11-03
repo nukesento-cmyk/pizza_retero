@@ -71,9 +71,24 @@ products, prices, stock or orders (README §9).
 | "Simple view" | Visitors can opt out of 3D; the choice is remembered per browser. |
 | Mobile / low power | `quality: low` (≤820px, coarse pointer, ≤4 cores, or PerformanceMonitor decline): no reflector, no shadows, lower DPR and bloom. Panels become a bottom sheet (≤44svh); the camera steps back and widens FOV in portrait. |
 
-## 5. Blender → web pipeline (Phase 6 proper)
+## 5. Asset pipeline (Phase 6)
 
-The prototype is **procedural geometry**: real 3D, but no custom-modelled assets yet. Every procedural component has a matching asset slot so the swap is mechanical:
+```
+packages/assets/src/models/*.ts  ─┐  (or Blender: blender/export_glb.py)
+                                  ├─► GLTFExporter (headless) ─► gltf-transform:
+                                  │     dedup · prune · weld · quantize ·
+                                  │     textures → WebP (512 / 256) · meshopt
+                                  └─► apps/web/public/models/{name}.glb, {name}-lod1.glb + manifest.json
+runtime: useGLTF(meshopt) → <Detailed> LOD → useAnimations crossfades
+budget gate: pnpm --filter @retero/assets check (CI)
+```
+
+**Shipped as GLB now:** the oven (brick texture, inward-facing fire cavity,
+`fire_loop`) and the chef (`idle`, `bake`, `celebrate` clips, crossfaded by
+the oven state), each with LOD0 + LOD1, 175 KB total. If a GLB fails to load,
+an error boundary swaps in the procedural version, so the scene never breaks.
+
+**Still procedural (planned GLB slots):**
 
 | Component | GLB (planned) | Animation clips |
 |---|---|---|
@@ -95,7 +110,7 @@ desktop, ≤ 3 MB on the low tier.
 
 | Done (working, tested) | Placeholder / pending |
 |---|---|
-| Scroll-driven camera through 8 stations with snap | Custom Blender models and animation (procedural stand-ins now) |
+| Scroll-driven camera through 8 stations with snap | Blender-modelled art: hero assets are GLB with clips, but authored in code; an artist's Blender export drops in via `blender/export_glb.py` (script not yet run, as Blender isn't installed locally) |
 | Direct 3D interaction: dough balls, sauce pots, topping tins, oven mouth, station tags | Builder options are **preview** values (Phase 3 catalogue replaces them) |
 | Live pizza preview that travels, layers and bakes | Prices: none shown by design; the server pricing engine arrives in Phase 3 |
 | Bake sequence (slide in, flare, brown, slide out, auto-reveal) | Real food photography: a slot is reserved on the reveal panel until menu products exist |

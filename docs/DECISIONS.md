@@ -168,6 +168,14 @@ single conditional `UPDATE` (no overselling under concurrency; tested with a
 race). A public `SECURITY DEFINER` function tells the menu which ingredients
 are out, without exposing quantities. Movements are append-only.
 
+### D-027 Hero 3D assets authored in code until an artist delivers Blender sources ⚠ review
+There are only about 2.5 GB free on the dev machine, so Blender wasn't installed without asking.
+The oven and chef are authored as three.js scenes (named nodes and clips per the
+runtime contract), exported headless to GLB, and optimised with gltf-transform
+(meshopt, quantisation, WebP, LOD1). `blender/export_glb.py` and the asset
+contract let artist-made models replace them without code changes. The export
+script has not been executed in this environment.
+
 ---
 
 ## Open questions

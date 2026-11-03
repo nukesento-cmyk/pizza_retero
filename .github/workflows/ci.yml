@@ -60,6 +60,8 @@ jobs:
             PGPASSWORD=postgres_ci psql -h localhost -U postgres -d retero -v ON_ERROR_STOP=1 -f "$f"
           done
 
+      - name: 3D asset budgets
+        run: pnpm --filter @retero/assets check
       - run: pnpm lint
       - run: pnpm typecheck
       - name: Unit + database tests (RLS, cross-tenant)

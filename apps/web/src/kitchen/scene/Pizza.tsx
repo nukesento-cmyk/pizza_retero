@@ -185,9 +185,20 @@ function ToppingLayer({ id, radius, seed, count }: { id: ToppingId; radius: numb
     m.instanceMatrix.needsUpdate = true;
   }, [pts, id]);
 
+  // New toppings drop onto the pie with a soft settle (instant with reduced motion).
+  const drop = useRef<THREE.Group>(null);
+  useFrame((_, dt) => {
+    const g = drop.current;
+    if (!g) return;
+    const k = runtime.reducedMotion ? 1 : Math.min(1, dt * 9);
+    g.position.y += (0 - g.position.y) * k;
+    g.scale.setScalar(g.scale.x + (1 - g.scale.x) * k);
+  });
   return (
-    <instancedMesh ref={ref} args={[geo, undefined, pts.length]} castShadow>
-      <meshStandardMaterial color={color} roughness={0.55} />
-    </instancedMesh>
+    <group ref={drop} position={[0, 0.28, 0]} scale={0.7}>
+      <instancedMesh ref={ref} args={[geo, undefined, pts.length]} castShadow>
+        <meshStandardMaterial color={color} roughness={0.55} />
+      </instancedMesh>
+    </group>
   );
 }

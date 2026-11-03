@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-11-03T14:34:38.385Z",
+  "models": {
+    "oven.glb": {
+      "bytes": 68596,
+      "sha256": "94314cc87d027f71",
+      "triangles": 3990,
+      "clips": [
+        "fire_loop"
+      ],
+      "nodes": 23
+    },
+    "oven-lod1.glb": {
+      "bytes": 43416,
+      "sha256": "fc79fa5a5dfcda49",
+      "triangles": 1330,
+      "clips": [
+        "fire_loop"
+      ],
+      "nodes": 23
+    },
+    "chef.glb": {
+      "bytes": 40328,
+      "sha256": "dc56343d827f26d5",
+      "triangles": 3148,
+      "clips": [
+        "idle",
+        "bake",
+        "celebrate"
+      ],
+      "nodes": 23
+    },
+    "chef-lod1.glb": {
+      "bytes": 27208,
+      "sha256": "675074ed3f2a353b",
+      "triangles": 1344,
+      "clips": [
+        "idle",
+        "bake",
+        "celebrate"
+      ],
+      "nodes": 23
+    }
+  }
+}
