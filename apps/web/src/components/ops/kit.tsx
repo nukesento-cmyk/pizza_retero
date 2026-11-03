@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 /* Ops UI kit: dense, calm, keyboard-friendly (DESIGN_SYSTEM §7). */
 
-export function PageHeader({ title, kicker, actions, children }: { title: string; kicker?: string; actions?: ReactNode; children?: ReactNode }) {
+export function PageHeader({ title, kicker, actions, children }: { title: string; kicker?: ReactNode; actions?: ReactNode; children?: ReactNode }) {
   return (
     <header className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b pb-4">
       <div>
-        {kicker ? <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{kicker}</p> : null}
+        {kicker ? <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{kicker}</div> : null}
         <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
         {children ? <div className="mt-1 text-sm text-muted-foreground">{children}</div> : null}
       </div>
@@ -40,12 +40,12 @@ export const inputCls =
   "block h-9 w-full rounded-md border border-input bg-background px-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60";
 
 export function TextInput(p: ComponentProps<"input">) {
-  return <input id={p.name} {...p} className={cn(inputCls, p.className)} />;
+  return <input {...p} className={cn(inputCls, p.className)} />;
 }
 
 export function SelectInput({ options, ...p }: ComponentProps<"select"> & { options: readonly { value: string; label: string }[] }) {
   return (
-    <select id={p.name} {...p} className={cn(inputCls, "pr-8", p.className)}>
+    <select {...p} className={cn(inputCls, "pr-8", p.className)}>
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   );

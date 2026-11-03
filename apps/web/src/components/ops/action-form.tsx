@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useActionState, useContext, useEffect, useRef, type ReactNode } from "react";
-import { useFormStatus } from "react-dom";
+import { createContext, startTransition, useActionState, useContext, useEffect, useRef, type FormEvent, type ReactNode } from "react";
 import type { ActionState } from "@/server/action";
 import { cn } from "@/lib/utils";
 
 type Action = (prev: ActionState, fd: FormData) => Promise<ActionState>;
 
+const PendingCtx = createContext(false);
 const FormCtx = createContext<{ errors: Record<string, string>; state: ActionState }>({ errors: {}, state: null });
 export const useFormErrors = () => useContext(FormCtx);
 
@@ -19,16 +19,23 @@ export const useFormErrors = () => useContext(FormCtx);
 export function ActionForm({ action, children, className, keep = false, hideOnSuccess = false }: {
   action: Action; children: ReactNode; className?: string; keep?: boolean; hideOnSuccess?: boolean;
 }) {
-  const [state, formAction] = useActionState<ActionState, FormData>(action, null);
+  const [state, formAction, pending] = useActionState<ActionState, FormData>(action, null);
   const ref = useRef<HTMLFormElement>(null);
   useEffect(() => {
     if (state?.ok && !keep) ref.current?.reset();
   }, [state, keep]);
   const errors = state && !state.ok ? state.fields ?? {} : {};
+  // Submit via onSubmit (not action=) so React doesn't clear the user's input when validation fails.
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget, (e.nativeEvent as SubmitEvent).submitter);
+    startTransition(() => formAction(fd));
+  };
   const link = state?.ok ? (state.data?.link as string | undefined) : undefined;
   return (
     <FormCtx.Provider value={{ errors, state }}>
-      <form ref={ref} action={formAction} className={cn("space-y-3", className)} noValidate>
+      <form ref={ref} onSubmit={onSubmit} aria-busy={pending} className={cn("space-y-3", className)} noValidate>
+        <PendingCtx.Provider value={pending}>
         {hideOnSuccess && state?.ok ? null : children}
         <div aria-live="polite" className="col-span-full">
           {state && !state.ok ? <p role="alert" className="text-sm text-destructive">{state.message}</p> : null}
@@ -38,6 +45,7 @@ export function ActionForm({ action, children, className, keep = false, hideOnSu
               className="mt-2 w-full rounded border bg-background px-2 py-1 font-mono text-xs" />
           ) : null}
         </div>
+        </PendingCtx.Provider>
       </form>
     </FormCtx.Provider>
   );
@@ -46,7 +54,7 @@ export function ActionForm({ action, children, className, keep = false, hideOnSu
 export function Submit({ children, pendingLabel, variant = "primary", className }: {
   children: ReactNode; pendingLabel?: string; variant?: "primary" | "secondary" | "ghost" | "danger"; className?: string;
 }) {
-  const { pending } = useFormStatus();
+  const pending = useContext(PendingCtx);
   return (
     <button
       type="submit" disabled={pending}
@@ -69,7 +77,7 @@ export function Field({ label, name, hint, children, className }: { label: strin
   const { errors } = useFormErrors();
   const error = name ? errors[name] : undefined;
   return (
-    <label className={cn("block text-sm", className)} htmlFor={name}>
+    <label className={cn("block text-sm", className)}>
       <span className="mb-1 block font-medium">{label}</span>
       {children}
       {hint && !error ? <span className="mt-1 block text-xs text-muted-foreground">{hint}</span> : null}

@@ -13,14 +13,17 @@
     "./brands": "./src/brands/index.ts",
     "./franchise": "./src/franchise/index.ts",
     "./domains": "./src/domains/index.ts",
-    "./hours": "./src/hours/index.ts"
+    "./hours": "./src/hours/index.ts",
+    "./catalogue": "./src/catalogue/index.ts",
+    "./pricing": "./src/pricing/index.ts"
   },
   "scripts": {
     "seed": "tsx scripts/seed.ts",
     "grant-platform-owner": "tsx scripts/grant-platform-owner.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint src test scripts",
-    "create-brand": "tsx scripts/create-brand.ts"
+    "create-brand": "tsx scripts/create-brand.ts",
+    "import-catalogue": "tsx scripts/import-catalogue.ts"
   },
   "dependencies": {
     "@retero/db": "workspace:*",

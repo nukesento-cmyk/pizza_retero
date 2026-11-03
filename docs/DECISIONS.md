@@ -107,6 +107,23 @@ link shown once (only its SHA-256 is stored). Acceptance re-checks, inside a
 `SECURITY DEFINER` function, that the inviter can *still* grant the role and
 that the accepting account's email matches.
 
+### D-019 Pricing engine rules
+Defaults are included in the base price; removing one never refunds; any
+other option is charged (branch override, then size price, then base).
+Omitting options means "the product as described"; required groups left empty
+fall back to defaults. KES prices must be whole shillings because M-Pesa STK
+takes integer shillings. VAT (16%) is treated as **included** (Q9) and
+extracted for receipts. Branch prices are bounded by brand min/max, enforced
+in core *and* by a database trigger.
+
+### D-020 Media served through the app, bucket private
+Product photos upload directly to S3-compatible storage with a presigned POST
+(size + type policy), then the server verifies type, size and magic bytes
+before attaching. The bucket stays private; `/media/brands/…` streams
+allow-listed keys with immutable caching. This works the same on S3, Supabase
+Storage and SeaweedFS (local), and keeps tenant prefixes server-chosen.
+Local dev uses SeaweedFS because MinIO stopped publishing community images.
+
 ---
 
 ## Open questions

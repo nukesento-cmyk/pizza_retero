@@ -236,7 +236,7 @@ Codes: `VALIDATION_FAILED` 400 · `UNAUTHENTICATED` 401 · `FORBIDDEN` 403 ·
 | **0 Foundation** ✅ | pnpm monorepo, Next.js, shared packages, env, Docker Postgres, Vitest, Playwright, CI, retro design system shell | `pnpm lint typecheck test build e2e` green locally and in CI |
 | **1 Identity** ✅ | Drizzle schemas (4.1), versioned migrations, RBAC catalogue, memberships, RLS, `withActor`, Supabase auth adapter, domain resolution, audit log | Cross-tenant RLS tests pass; RBAC unit tests pass |
 | **2 Franchise admin** ✅ | `/ops` shell, franchisee/branch CRUD, staff invites, domains (DNS TXT verification), brand settings, operating hours + closures | Brand admin can onboard franchisee → branch → staff end to end |
-| 3 Catalogue | Products, ingredients, allergens, option groups, branch pricing/availability, **pricing engine** | Property tests on pricing; no float anywhere |
+| **3 Catalogue** ✅ | Products, ingredients, allergens, option groups, branch pricing/availability, **pricing engine**, photo uploads, menu API, starter template | Property tests on pricing; no float anywhere |
 | 4 Commerce | Cart, quotes, checkout, orders, M-Pesa STK, callbacks, reconciliation, refunds, outbox worker | Sandbox STK end to end; duplicate/delayed callback tests |
 | 5 Operations | Kitchen board, state machines, inventory movements and reservations, delivery, WhatsApp handoff | Concurrency tests on stock |
 | 6 3D | **Prototype done early (D-012):** kitchen scene, camera rig, 8 interactive stations, fallbacks. Remaining: Blender assets, LOD, perf budget | Mobile perf budget met; no-WebGL path works |

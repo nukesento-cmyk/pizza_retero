@@ -7,3 +7,5 @@ export * as brands from "./brands";
 export * as franchise from "./franchise";
 export * as domains from "./domains";
 export * as hours from "./hours";
+export * as catalogue from "./catalogue";
+export * as pricing from "./pricing";

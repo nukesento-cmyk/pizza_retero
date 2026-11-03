@@ -1,0 +1,20 @@
+{
+  "identities": [
+    {
+      "name": "retero-app",
+      "credentials": [
+        {
+          "accessKey": "retero",
+          "secretKey": "retero_s3_dev"
+        }
+      ],
+      "actions": [
+        "Admin",
+        "Read",
+        "List",
+        "Tagging",
+        "Write"
+      ]
+    }
+  ]
+}

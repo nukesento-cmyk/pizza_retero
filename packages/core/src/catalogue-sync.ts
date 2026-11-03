@@ -2,6 +2,7 @@ import { and, eq, inArray, isNull, notInArray, sql } from "drizzle-orm";
 import type { Database } from "@retero/db";
 import { schema } from "@retero/db";
 import { PERMISSIONS, SYSTEM_ROLES } from "./rbac/catalogue";
+import { ALLERGENS } from "./catalogue/allergens";
 
 /**
  * Mirror the code permission catalogue and system roles into the database.
@@ -44,6 +45,10 @@ export async function syncCatalogue(ownerDb: Database): Promise<{ permissions: n
     await tx
       .delete(schema.rolePermissions)
       .where(and(inArray(schema.rolePermissions.roleId, systemRoleIds), notInArray(schema.rolePermissions.permissionKey, Object.keys(PERMISSIONS))));
+
+    await tx.insert(schema.allergens)
+      .values(Object.entries(ALLERGENS).map(([code, name]) => ({ code, name })))
+      .onConflictDoUpdate({ target: schema.allergens.code, set: { name: sql`excluded.name` } });
 
     return { permissions: perms.length, roles: SYSTEM_ROLES.length };
   });

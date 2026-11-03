@@ -1,0 +1,60 @@
+{
+  "$note": "STARTER TEMPLATE. Prices, recipes and allergens are placeholders for a new brand to edit before publishing. Prices are KES (whole shillings).",
+  "ingredients": [
+    { "code": "dough", "name": "Pizza dough", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": ["gluten"] },
+    { "code": "tomato-sauce", "name": "Tomato sauce", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "garlic-cream", "name": "Garlic cream", "unit": "g", "isVegetarian": true, "isVegan": false, "allergens": ["milk"] },
+    { "code": "pesto", "name": "Basil pesto", "unit": "g", "isVegetarian": true, "isVegan": false, "allergens": ["milk", "nuts"] },
+    { "code": "bbq-sauce", "name": "BBQ sauce", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": ["mustard", "sulphites"] },
+    { "code": "mozzarella", "name": "Mozzarella", "unit": "g", "isVegetarian": true, "isVegan": false, "allergens": ["milk"] },
+    { "code": "vegan-cheese", "name": "Plant-based cheese", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": ["soy"] },
+    { "code": "pepperoni", "name": "Pepperoni", "unit": "g", "isVegetarian": false, "isVegan": false, "allergens": ["mustard"] },
+    { "code": "mushroom", "name": "Mushroom", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "olive", "name": "Black olive", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "basil", "name": "Fresh basil", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "green-pepper", "name": "Green pepper", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "red-onion", "name": "Red onion", "unit": "g", "isVegetarian": true, "isVegan": true, "allergens": [] },
+    { "code": "garlic-butter", "name": "Garlic butter", "unit": "g", "isVegetarian": true, "isVegan": false, "allergens": ["milk"] },
+    { "code": "soda-can", "name": "Soda (330ml can)", "unit": "each", "isVegetarian": true, "isVegan": true, "allergens": [] }
+  ],
+  "groups": [
+    { "code": "crust", "name": "Crust", "kind": "crust", "minSelect": 1, "maxSelect": 1, "sort": 1, "options": [
+      { "code": "classic", "name": "Hand-stretched", "priceKes": 0, "visualKey": "classic" },
+      { "code": "thin", "name": "Thin & crisp", "priceKes": 0, "visualKey": "thin" },
+      { "code": "stuffed", "name": "Cheese-stuffed", "priceKes": 200, "visualKey": "stuffed", "ingredient": "mozzarella" }
+    ] },
+    { "code": "sauce", "name": "Sauce", "kind": "sauce", "minSelect": 1, "maxSelect": 1, "sort": 2, "options": [
+      { "code": "tomato", "name": "San Marzano", "priceKes": 0, "ingredient": "tomato-sauce", "visualKey": "tomato", "color": "#b3261b" },
+      { "code": "garlic-cream", "name": "Garlic cream", "priceKes": 50, "ingredient": "garlic-cream", "visualKey": "white", "color": "#efe4cf" },
+      { "code": "pesto", "name": "Basil pesto", "priceKes": 100, "ingredient": "pesto", "visualKey": "pesto", "color": "#4f7a2a" },
+      { "code": "bbq", "name": "Smoky BBQ", "priceKes": 50, "ingredient": "bbq-sauce", "visualKey": "bbq", "color": "#5a2212" }
+    ] },
+    { "code": "cheese", "name": "Cheese", "kind": "cheese", "minSelect": 1, "maxSelect": 1, "sort": 3, "options": [
+      { "code": "mozzarella", "name": "Mozzarella", "priceKes": 0, "ingredient": "mozzarella", "visualKey": "mozzarella", "color": "#f6dea0" },
+      { "code": "extra-mozzarella", "name": "Extra mozzarella", "priceKes": 150, "ingredient": "mozzarella", "visualKey": "extra", "color": "#f9e3a6" },
+      { "code": "plant-based", "name": "Plant-based", "priceKes": 150, "ingredient": "vegan-cheese", "visualKey": "vegan", "color": "#f2e7c4" },
+      { "code": "no-cheese", "name": "No cheese", "priceKes": 0, "visualKey": "none" }
+    ] },
+    { "code": "toppings", "name": "Toppings", "kind": "topping", "minSelect": 0, "maxSelect": 6, "sort": 4, "options": [
+      { "code": "pepperoni", "name": "Pepperoni", "priceKes": 150, "ingredient": "pepperoni", "visualKey": "pepperoni", "color": "#a8321f", "sizes": { "personal": 100, "classic": 150, "party": 220 } },
+      { "code": "mushroom", "name": "Mushroom", "priceKes": 100, "ingredient": "mushroom", "visualKey": "mushroom", "color": "#d9c3a0", "sizes": { "personal": 70, "classic": 100, "party": 150 } },
+      { "code": "olive", "name": "Black olive", "priceKes": 100, "ingredient": "olive", "visualKey": "olive", "color": "#1d1712", "sizes": { "personal": 70, "classic": 100, "party": 150 } },
+      { "code": "basil", "name": "Fresh basil", "priceKes": 50, "ingredient": "basil", "visualKey": "basil", "color": "#2e6b52" },
+      { "code": "green-pepper", "name": "Green pepper", "priceKes": 80, "ingredient": "green-pepper", "visualKey": "pepper", "color": "#3f8a3a", "sizes": { "personal": 50, "classic": 80, "party": 120 } },
+      { "code": "red-onion", "name": "Red onion", "priceKes": 80, "ingredient": "red-onion", "visualKey": "onion", "color": "#8e3b6e", "sizes": { "personal": 50, "classic": 80, "party": 120 } }
+    ] }
+  ],
+  "pizzaSizes": [
+    { "code": "personal", "name": "Personal 9\"", "sizeCode": "personal", "doughG": 180 },
+    { "code": "classic", "name": "Classic 12\"", "sizeCode": "classic", "doughG": 280, "isDefault": true },
+    { "code": "party", "name": "Party 16\"", "sizeCode": "party", "doughG": 450 }
+  ],
+  "products": [
+    { "slug": "margherita", "name": "Margherita", "kind": "pizza", "description": "San Marzano, mozzarella, basil. The one everything is measured against.", "prices": { "personal": 650, "classic": 950, "party": 1450 }, "defaults": ["crust/classic", "sauce/tomato", "cheese/mozzarella", "toppings/basil"], "sort": 1 },
+    { "slug": "pepperoni", "name": "Pepperoni", "kind": "pizza", "description": "Cup-and-char pepperoni over mozzarella.", "prices": { "personal": 800, "classic": 1150, "party": 1700 }, "defaults": ["crust/classic", "sauce/tomato", "cheese/mozzarella", "toppings/pepperoni"], "sort": 2 },
+    { "slug": "garden", "name": "The Garden", "kind": "pizza", "description": "Mushroom, pepper, red onion, olive.", "prices": { "personal": 750, "classic": 1100, "party": 1600 }, "defaults": ["crust/classic", "sauce/tomato", "cheese/mozzarella", "toppings/mushroom", "toppings/green-pepper", "toppings/red-onion", "toppings/olive"], "sort": 3 },
+    { "slug": "build-your-own", "name": "Build your own", "kind": "pizza", "builderEnabled": true, "description": "Walk the kitchen and build it station by station.", "prices": { "personal": 600, "classic": 850, "party": 1300 }, "defaults": ["crust/classic", "sauce/tomato", "cheese/mozzarella"], "sort": 0 },
+    { "slug": "garlic-bread", "name": "Garlic bread", "kind": "side", "description": "Hand-stretched, garlic butter, oven-blistered.", "fixed": { "code": "regular", "name": "Regular", "priceKes": 400 }, "recipe": { "dough": 120, "garlic-butter": 30 }, "sort": 10 },
+    { "slug": "soda", "name": "Soda", "kind": "drink", "description": "330ml can, cold.", "fixed": { "code": "can", "name": "330ml can", "priceKes": 150 }, "recipe": { "soda-can": 1 }, "sort": 20 }
+  ]
+}

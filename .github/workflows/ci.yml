@@ -24,6 +24,12 @@ env:
   APP_FALLBACK_BRAND_SLUG: retero
   AUDIT_IP_SALT: ci-only-not-secret-salt-0123456789
   NEXT_TELEMETRY_DISABLED: 1
+  S3_ENDPOINT: http://localhost:9100
+  S3_REGION: us-east-1
+  S3_BUCKET: retero-media
+  S3_ACCESS_KEY_ID: retero
+  S3_SECRET_ACCESS_KEY: retero_s3_dev
+  S3_FORCE_PATH_STYLE: "true"
 
 jobs:
   verify:
@@ -67,6 +73,11 @@ jobs:
           pnpm db:seed
           pnpm --filter @retero/core create-brand retero "Retero Pizza Co."
 
+      - name: Object storage (S3-compatible, for media upload tests)
+        run: |
+          docker run -d --name s3 -p 9100:8333 -v "$PWD/infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro" chrislusf/seaweedfs:3.80 server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+          pnpm --filter web storage:init
+      - run: pnpm --filter @retero/core import-catalogue retero --publish
       - run: pnpm build
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - name: End-to-end (desktop + mobile, includes WebGL journey)
