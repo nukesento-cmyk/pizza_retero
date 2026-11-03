@@ -1,0 +1,33 @@
+{
+  "name": "retero",
+  "private": true,
+  "packageManager": "pnpm@12.16.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm -r --parallel lint",
+    "typecheck": "tsc -p tsconfig.json && pnpm -r --parallel typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "pnpm --filter web e2e",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d --wait",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "db:generate": "pnpm --filter @retero/db generate",
+    "db:migrate": "pnpm --filter @retero/db migrate",
+    "db:seed": "pnpm --filter @retero/core seed"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "drizzle-orm": "0.45.4",
+    "eslint": "9.39.5",
+    "postgres": "3.4.7",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "4.1.12"
+  },
+  "type": "module"
+}
