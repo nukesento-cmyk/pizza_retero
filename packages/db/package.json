@@ -1,0 +1,26 @@
+{
+  "name": "@retero/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "tsx scripts/migrate.ts",
+    "check": "drizzle-kit check",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src test scripts"
+  },
+  "devDependencies": {
+    "dotenv": "16.6.1",
+    "drizzle-kit": "0.31.11"
+  },
+  "dependencies": {
+    "@retero/shared": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "postgres": "3.4.7"
+  }
+}
