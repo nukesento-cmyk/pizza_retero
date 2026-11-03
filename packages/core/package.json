@@ -1,0 +1,29 @@
+{
+  "name": "@retero/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./rbac": "./src/rbac/index.ts",
+    "./tenancy": "./src/tenancy/index.ts",
+    "./identity": "./src/identity/index.ts",
+    "./audit": "./src/audit/index.ts",
+    "./staff": "./src/staff/index.ts"
+  },
+  "scripts": {
+    "seed": "tsx scripts/seed.ts",
+    "grant-platform-owner": "tsx scripts/grant-platform-owner.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint src test scripts"
+  },
+  "dependencies": {
+    "@retero/db": "workspace:*",
+    "@retero/shared": "workspace:*",
+    "drizzle-orm": "0.45.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "dotenv": "16.6.1"
+  }
+}
