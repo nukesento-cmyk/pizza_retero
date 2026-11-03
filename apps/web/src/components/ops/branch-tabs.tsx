@@ -7,6 +7,7 @@ export function BranchTabs({ branchId, actor, scope }: { branchId: string; actor
     { href: `/ops/br/${branchId}`, label: "Branch", p: "branch.read" },
     { href: `/ops/br/${branchId}/kitchen`, label: "Kitchen", p: "kitchen.ticket.update" },
     { href: `/ops/br/${branchId}/orders`, label: "Orders", p: "order.read" },
+    { href: `/ops/br/${branchId}/assisted`, label: "WhatsApp orders", p: "order.manage" },
     { href: `/ops/br/${branchId}/menu`, label: "Menu", p: "branch.menu.manage" },
     { href: `/ops/br/${branchId}/inventory`, label: "Inventory", p: "inventory.read" },
     { href: `/ops/br/${branchId}/delivery`, label: "Delivery", p: "delivery.read" },

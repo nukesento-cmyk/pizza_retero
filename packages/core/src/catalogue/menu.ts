@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { notFound } from "@retero/shared/errors";
 import { schema, type Executor } from "@retero/db";
 import type { MenuGroup, MenuOption, MenuProduct, MenuSnapshot } from "./types";
@@ -36,6 +36,9 @@ export async function getBranchMenu(tx: Executor, branchId: string): Promise<Men
   ]);
 
   const ingById = new Map(ings.map((i) => [i.id, i]));
+  // Tracked ingredients that are out at this branch (quantities are never exposed).
+  const outRows = await tx.execute<{ id: string }>(sql`select app.unavailable_ingredients(${branchId}) as id`);
+  const out = new Set(outRows.map((r) => r.id));
   const allergensOf = (ingredientId: string | null) => (ingredientId ? ingAll.filter((a) => a.ingredientId === ingredientId).map((a) => a.allergenCode) : []);
   const optOverride = new Map(bOpts.map((o) => [o.optionId, o]));
 
@@ -50,7 +53,7 @@ export async function getBranchMenu(tx: Executor, branchId: string): Promise<Men
     optionMap[o.id] = {
       id: o.id, code: o.code, name: o.name, groupId: o.groupId,
       priceMinor: ov?.priceMinor ?? o.priceMinor, sizePrices,
-      available: ov ? ov.isAvailable : true,
+      available: (ov ? ov.isAvailable : true) && !(o.ingredientId && out.has(o.ingredientId)),
       visualKey: o.visualKey, color: o.color, ingredientId: o.ingredientId,
       allergens: allergensOf(o.ingredientId),
       vegetarian: ing ? ing.isVegetarian : true, vegan: ing ? ing.isVegan : true,
@@ -75,7 +78,7 @@ export async function getBranchMenu(tx: Executor, branchId: string): Promise<Men
     return {
       id: p.id, slug: p.slug, name: p.name, description: p.description, kind: p.kind,
       builderEnabled: p.builderEnabled, imageKey: p.imageKey,
-      available: branch.status === "active" && (availability.get(p.id) ?? true) && pv.length > 0,
+      available: branch.status === "active" && (availability.get(p.id) ?? true) && pv.length > 0 && !recipeIngs.some((id) => out.has(id)),
       variants: pv.map((v) => ({ id: v.id, code: v.code, name: v.name, sizeCode: v.sizeCode, priceMinor: priceOverride.get(v.id) ?? v.priceMinor, isDefault: v.isDefault })),
       groups: pogs.filter((g) => g.productId === p.id && groupMap[g.groupId]).sort((a, b) => a.sort - b.sort).map((g) => ({
         groupId: g.groupId,

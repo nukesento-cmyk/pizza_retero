@@ -1,11 +1,11 @@
 import "server-only";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { withActor, type Tx } from "@retero/db";
+import { withActor, withSystem, type Tx } from "@retero/db";
 import type { rbac } from "@retero/core";
 import { isAppError, toHttp } from "@retero/shared/errors";
 import { getSession } from "./auth/session";
-import { db } from "./db";
+import { db, systemDb } from "./db";
 import { log } from "./log";
 
 export type ActionState =
@@ -54,4 +54,29 @@ export function formObject(fd: FormData): Record<string, unknown> {
     out[k] = val === "on" || val === "true" ? true : val === "false" ? false : val;
   }
   return out;
+}
+
+/**
+ * Staff operation with side-effects across tables the staff role can't write
+ * directly (kitchen transitions, stock, riders, assisted orders). The verified
+ * actor is authorized by core against the stored scope; execution happens on
+ * the system pool (D-025). Reads elsewhere stay behind RLS.
+ */
+export async function actSystem(
+  fn: (ctx: ActionCtx) => Promise<{ message?: string; data?: Record<string, unknown> } | void>,
+  opts: { revalidate?: string | string[] } = {},
+): Promise<ActionState> {
+  const requestId = (await headers()).get("x-request-id") ?? crypto.randomUUID();
+  const session = await getSession();
+  if (session.actor.kind !== "user") return { ok: false, message: "Please sign in again." };
+  const actor = session.actor;
+  try {
+    const res = await withSystem(systemDb(), "ops", (tx) => fn({ tx, actor, userId: actor.userId, requestId }));
+    for (const p of [opts.revalidate ?? []].flat()) revalidatePath(p);
+    return { ok: true, ...(res ?? {}) };
+  } catch (e) {
+    if (isAppError(e)) return { ok: false, message: e.message };
+    log.error("action.failed", { requestId, err: e });
+    return { ok: false, message: `Something went wrong. (ref ${requestId.slice(0, 8)})` };
+  }
 }

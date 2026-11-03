@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { and, asc, eq, schema } from "@retero/db";
-import { rbac } from "@retero/core";
+import { orders as orderFlow, rbac } from "@retero/core";
 import { requireUser } from "@/server/auth/session";
 import { branchScope, loadBranch, readAs } from "@/server/ops/context";
 import { ActionForm, Field, Submit } from "@/components/ops/action-form";
@@ -8,6 +8,7 @@ import { PageHeader, Panel, Section, SelectInput, Table, TextInput } from "@/com
 import { BranchTabs } from "@/components/ops/branch-tabs";
 import { fmt } from "@/lib/money";
 import { approveRefundAction, requestRefundAction } from "../../../../commerce-actions";
+import { transitionAction } from "../../../../ops-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,22 @@ export default async function OrderDetail({ params }: { params: Promise<{ branch
         {o.channel} · {o.fulfilment} · placed {o.placedAt.toLocaleString("en-KE", tz)} · <strong className="uppercase">{o.status.replace(/_/g, " ")}</strong>
       </PageHeader>
       <BranchTabs branchId={branchId} actor={s.actor} scope={scope} />
+      <div className="mb-6 flex flex-wrap gap-2">
+        {orderFlow.nextStatuses(o.status, o.fulfilment).filter((e) => e.permission !== "system" && rbac.can(s.actor, e.permission as rbac.Permission, scope) && e.to !== "out_for_delivery").map((e) => (
+          e.to === "cancelled" ? (
+            <ActionForm key={e.to} action={transitionAction} className="flex items-end gap-2 space-y-0">
+              <input type="hidden" name="orderId" value={o.id} /><input type="hidden" name="branchId" value={branchId} /><input type="hidden" name="to" value="cancelled" />
+              <Field label="Cancel reason" name="reason"><TextInput name="reason" required className="w-56" /></Field>
+              <Submit variant="danger">Cancel order</Submit>
+            </ActionForm>
+          ) : (
+            <ActionForm key={e.to} action={transitionAction} className="space-y-0">
+              <input type="hidden" name="orderId" value={o.id} /><input type="hidden" name="branchId" value={branchId} /><input type="hidden" name="to" value={e.to} />
+              <Submit>{`Mark ${e.to.replace(/_/g, " ")}`}</Submit>
+            </ActionForm>
+          )
+        ))}
+      </div>
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <div>
           <Section title="Items">

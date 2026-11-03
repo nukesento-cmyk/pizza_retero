@@ -10,6 +10,7 @@ import { isOpenAt } from "../hours";
 import { zoneFor } from "./zones";
 import { normalizeKenyanMobile } from "./phone";
 import { enqueue } from "../outbox";
+import { reserveForOrder } from "../inventory";
 
 /*
  * The commerce engine. Web checkout, WhatsApp-assisted and staff orders all
@@ -245,6 +246,7 @@ export async function placeOrder(tx: Executor, cart: Cart, raw: unknown) {
     unitPriceMinor: l.unitPriceMinor, quantity: l.quantity, lineTotalMinor: l.lineTotalMinor, notes: l.notes,
   })));
   await tx.insert(schema.orderStatusHistory).values({ brandId: cart.brandId, branchId: branch.id, orderId: order!.id, toStatus: "pending_payment", actorUserId: input.createdByUserId ?? null });
+  await reserveForOrder(tx, order!);
   await tx.update(schema.carts).set({ checkedOutAt: new Date() }).where(eq(schema.carts.id, cart.id));
   await enqueue(tx, { topic: "order.placed", brandId: cart.brandId, aggregateType: "order", aggregateId: order!.id, payload: { number, branchId: branch.id, totalMinor: q.totalMinor.toString() } });
   return { order: order!, trackingToken, replayed: false as const };

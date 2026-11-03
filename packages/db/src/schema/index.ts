@@ -5,3 +5,4 @@ export * from "./access";
 export * from "./admin";
 export * from "./catalogue";
 export * from "./commerce";
+export * from "./operations";

@@ -14,3 +14,8 @@ export * as payments from "./payments";
 export * as outbox from "./outbox";
 export * as orders from "./orders";
 export * as geo from "./geo";
+export * as inventory from "./inventory";
+export * as kitchen from "./kitchen";
+export * as delivery from "./delivery";
+export * as assisted from "./assisted";
+export * as reports from "./reports";

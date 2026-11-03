@@ -153,6 +153,21 @@ automatically. Every time comparison uses the database clock.
 counter). Unique per branch. Public tracking always needs the unguessable
 tracking token as well, so a number alone reveals nothing.
 
+### D-025 Staff operations execute on the system pool after core authorization ⚠ review
+Kitchen transitions, stock movements, rider actions and assisted orders touch
+tables staff may only *read* (inventory, payments, reservations). Rather than
+granting staff writes there, `core` loads the order/branch, authorizes the
+verified actor against that **stored** scope, and runs the change on the
+system pool in one transaction. Reads (boards, lists, reports) still go
+through RLS as the staff member. Covered by cross-branch tests in
+`operations.test.ts`.
+
+### D-026 Stock: reserve on order, consume on "preparing", release on cancel
+Only ingredients a branch chooses to track can block orders. Reservation is a
+single conditional `UPDATE` (no overselling under concurrency; tested with a
+race). A public `SECURITY DEFINER` function tells the menu which ingredients
+are out, without exposing quantities. Movements are append-only.
+
 ---
 
 ## Open questions

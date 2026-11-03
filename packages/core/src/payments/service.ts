@@ -11,6 +11,7 @@ import { maskPhone, normalizeKenyanMobile } from "../commerce/phone";
 import { gatewayFor, resolveAccount, type GatewayDeps } from "./mpesa/accounts";
 import { classifyResult, GatewayError, type MpesaGateway } from "./mpesa/gateway";
 import { onOrderPaid } from "./hooks";
+import { releaseForOrder } from "../inventory";
 
 /*
  * Payments. Rules (README §6):
@@ -285,6 +286,7 @@ export async function expireUnpaidOrders(run: RunTx, opts: { limit?: number } = 
       if (inflight.length) continue;
       await tx.update(schema.orders).set({ status: "cancelled", cancelledAt: new Date(), cancelReason: "Payment window expired", paymentStatus: o.paymentStatus === "pending" ? "unpaid" : o.paymentStatus }).where(eq(schema.orders.id, o.id));
       await tx.insert(schema.orderStatusHistory).values({ brandId: o.brandId, branchId: o.branchId, orderId: o.id, fromStatus: "pending_payment", toStatus: "cancelled", reason: "Payment window expired" });
+      await releaseForOrder(tx, o.id);
       await enqueue(tx, { topic: "order.cancelled", brandId: o.brandId, aggregateType: "order", aggregateId: o.id, payload: { reason: "payment_expired" } });
       cancelled.push(o.id);
     }

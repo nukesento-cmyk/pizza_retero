@@ -7,7 +7,7 @@
  */
 import path from "node:path";
 import { config } from "dotenv";
-import { createDb, withSystem } from "@retero/db";
+import { createDb, schema, sql, withSystem } from "@retero/db";
 import { outbox, payments } from "@retero/core";
 import { handlers } from "./handlers";
 
@@ -42,10 +42,25 @@ async function deliverOutbox() {
   return delivered;
 }
 
+/** Delivered/collected orders auto-complete after an hour (customer issues go through refunds). */
+async function autoComplete() {
+  return run(async (tx) => {
+    const rows = await tx.execute<{ id: string; brand_id: string; branch_id: string }>(sql`
+      update orders set status = 'completed', updated_at = now()
+       where status in ('delivered', 'collected') and updated_at < now() - interval '1 hour'
+       returning id, brand_id, branch_id`);
+    for (const r of rows) {
+      await tx.insert(schema.orderStatusHistory).values({ brandId: r.brand_id, branchId: r.branch_id, orderId: r.id, toStatus: "completed", reason: "Auto-completed" });
+    }
+    return rows.length;
+  });
+}
+
 export async function pass() {
   const reconciled = await payments.reconcilePending(run, deps);
   const expired = await payments.expireUnpaidOrders(run);
   const delivered = await deliverOutbox();
+  await autoComplete();
   if (reconciled.length || expired.length || delivered) log("info", "worker.pass", { reconciled: reconciled.length, expired: expired.length, delivered });
 }
 
