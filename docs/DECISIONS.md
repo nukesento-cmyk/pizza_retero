@@ -86,6 +86,27 @@ transitions. Only small tags use drei `<Html>`.
 Playwright's bundled Chromium no longer supports macOS 13. Set
 `E2E_BROWSER_CHANNEL=chrome` locally; CI (Ubuntu) uses bundled Chromium.
 
+### D-016 Local-only development sign-in
+Supabase isn't configured yet, and staff screens need a signed-in user to
+develop and test. `/dev-sign-in` sets an HMAC-signed cookie for any email.
+It works only when `APP_ENV=local`, `DEV_AUTH_SECRET` is set and Supabase is
+**not** configured, and `env()` refuses to start if `DEV_AUTH_SECRET` is set
+in any other environment. It is never a production login path.
+
+### D-017 System database role for identity-less server paths ⚠ review
+Payment callbacks, the guest checkout engine and the worker have no end-user
+identity, so staff RLS policies can't express what they may do. They use a
+separate pool (`retero_system`, `BYPASSRLS`, DML grants only, no UPDATE on
+audit logs) via `withSystem()`. Core still validates and authorizes every
+call; the role only removes the RLS layer for those paths. Usage is limited to
+`core/commerce`, `core/payments` and the worker (reviewed in Phase 8).
+
+### D-018 Invitations are shared links until an email provider exists
+No email/SMS provider is chosen (Q8). The inviter gets a single-use, 7-day
+link shown once (only its SHA-256 is stored). Acceptance re-checks, inside a
+`SECURITY DEFINER` function, that the inviter can *still* grant the role and
+that the accepting account's email matches.
+
 ---
 
 ## Open questions

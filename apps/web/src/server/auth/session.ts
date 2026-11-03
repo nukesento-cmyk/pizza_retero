@@ -1,10 +1,12 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { withActor } from "@retero/db";
+import { eq, schema, withActor } from "@retero/db";
+import { readDevSession } from "./dev";
 import { identity, rbac } from "@retero/core";
 import { supabaseServer } from "@/lib/supabase/server";
 import { db } from "../db";
+import { devAuthEnabled } from "../env";
 
 export interface Session {
   actor: rbac.Actor;
@@ -19,7 +21,15 @@ export interface Session {
  */
 export const getSession = cache(async (): Promise<Session> => {
   const supabase = await supabaseServer();
-  if (!supabase) return { actor: { kind: "anonymous" }, user: null };
+  if (!supabase) {
+    const devUser = await readDevSession();
+    if (!devUser) return { actor: { kind: "anonymous" }, user: null };
+    return withActor(db(), devUser, async (tx) => {
+      const [u] = await tx.select({ id: schema.users.id, email: schema.users.email }).from(schema.users).where(eq(schema.users.id, devUser));
+      if (!u) return { actor: { kind: "anonymous" } as const, user: null };
+      return { actor: await identity.loadActor(tx, devUser), user: { id: u.id, email: u.email } };
+    });
+  }
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return { actor: { kind: "anonymous" }, user: null };
@@ -40,7 +50,7 @@ export const getSession = cache(async (): Promise<Session> => {
 /** For pages that need a signed-in user. */
 export async function requireUser(next = "/ops"): Promise<Session & { user: NonNullable<Session["user"]> }> {
   const s = await getSession();
-  if (!s.user) redirect(`/sign-in?next=${encodeURIComponent(next)}`);
+  if (!s.user) redirect(`${devAuthEnabled() ? "/dev-sign-in" : "/sign-in"}?next=${encodeURIComponent(next)}` as never);
   return s as Session & { user: NonNullable<Session["user"]> };
 }
 

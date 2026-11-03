@@ -9,7 +9,11 @@
     "./tenancy": "./src/tenancy/index.ts",
     "./identity": "./src/identity/index.ts",
     "./audit": "./src/audit/index.ts",
-    "./staff": "./src/staff/index.ts"
+    "./staff": "./src/staff/index.ts",
+    "./brands": "./src/brands/index.ts",
+    "./franchise": "./src/franchise/index.ts",
+    "./domains": "./src/domains/index.ts",
+    "./hours": "./src/hours/index.ts"
   },
   "scripts": {
     "seed": "tsx scripts/seed.ts",

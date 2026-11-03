@@ -112,6 +112,8 @@ export const domains = pgTable(
     franchiseeId: uuid("franchisee_id"),
     branchId: uuid("branch_id"),
     isPrimary: boolean("is_primary").notNull().default(false),
+    /** Random token the owner publishes as a DNS TXT record to prove control. */
+    verificationToken: text("verification_token"),
     verifiedAt: timestamp("verified_at", { withTimezone: true }),
     ...timestamps,
   },

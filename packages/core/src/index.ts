@@ -3,3 +3,7 @@ export * as tenancy from "./tenancy";
 export * as identity from "./identity";
 export * as audit from "./audit";
 export * as staff from "./staff";
+export * as brands from "./brands";
+export * as franchise from "./franchise";
+export * as domains from "./domains";
+export * as hours from "./hours";
