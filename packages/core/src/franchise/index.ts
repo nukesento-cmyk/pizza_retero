@@ -106,6 +106,10 @@ export async function updateBranch(tx: Executor, actor: Actor, raw: unknown) {
   authorize(actor, "branch.update", scope);
   // Opening/closing a branch for trade is a brand decision.
   if (rest.status && scope.level === "branch") authorize(actor, "branch.create", { level: "brand", brandId: scope.brandId });
+  if (rest.status === "active") {
+    const hours = await tx.select({ id: schema.branchHours.id }).from(schema.branchHours).where(eq(schema.branchHours.branchId, branchId)).limit(1);
+    if (!hours.length) throw new AppError("VALIDATION_FAILED", "Set opening hours before opening the branch for trading.");
+  }
   const patch = {
     ...rest,
     ...(latitude !== undefined ? { latitude: numStr(latitude) } : {}),

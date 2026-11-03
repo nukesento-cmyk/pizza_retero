@@ -15,7 +15,12 @@
     "./domains": "./src/domains/index.ts",
     "./hours": "./src/hours/index.ts",
     "./catalogue": "./src/catalogue/index.ts",
-    "./pricing": "./src/pricing/index.ts"
+    "./pricing": "./src/pricing/index.ts",
+    "./commerce": "./src/commerce/index.ts",
+    "./payments": "./src/payments/index.ts",
+    "./outbox": "./src/outbox/index.ts",
+    "./orders": "./src/orders/index.ts",
+    "./geo": "./src/geo/index.ts"
   },
   "scripts": {
     "seed": "tsx scripts/seed.ts",

@@ -124,6 +124,35 @@ allow-listed keys with immutable caching. This works the same on S3, Supabase
 Storage and SeaweedFS (local), and keeps tenant prefixes server-chosen.
 Local dev uses SeaweedFS because MinIO stopped publishing community images.
 
+### D-021 Local M-Pesa simulator ⚠ review
+There are no Daraja sandbox credentials yet. A simulator implements the same
+gateway interface, posts realistic callbacks (success / cancel / insufficient
+funds / no-callback, chosen by the phone number's last digits) and answers STK
+Query statelessly, so the **real** callback, verification and reconciliation
+code runs end to end. Selected per M-Pesa account (`environment = simulator`)
+and refused unless `APP_ENV=local`. The Daraja client is fully implemented and
+unit-tested against Daraja's request and response shapes; switching to sandbox only
+needs `MPESA_<REF>_CONSUMER_KEY/_SECRET/_PASSKEY` and an account set to
+`sandbox`.
+
+### D-022 Refunds are maker-checker
+Requesting a refund needs `order.manage`; approving needs `order.refund` and
+a different person. M-Pesa reversals return the whole transaction (Daraja
+can't reverse part of a payment), so part-refunds are recorded as manual
+refunds with a reference. Automated B2C part-refunds are a future extension.
+
+### D-023 Payment confirmation rules
+An order becomes `new` (sent to the kitchen) only when a callback says success
+**and** STK Query confirms it **and** the amount matches. Lost callbacks are
+settled by the worker's reconciliation. Money arriving after an order was
+cancelled, or a second successful attempt, creates a refund request
+automatically. Every time comparison uses the database clock.
+
+### D-024 Order numbers are per branch
+`WES-0042`: a prefix from the branch slug plus a per-branch sequence (row-locked
+counter). Unique per branch. Public tracking always needs the unguessable
+tracking token as well, so a number alone reveals nothing.
+
 ---
 
 ## Open questions

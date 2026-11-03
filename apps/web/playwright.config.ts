@@ -19,6 +19,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `pnpm start --port ${PORT}`,
+    env: { MPESA_CALLBACK_BASE_URL: `http://localhost:${PORT}`, NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}` },
     url: `http://localhost:${PORT}/api/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

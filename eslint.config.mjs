@@ -2,7 +2,7 @@
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/migrations/**", "apps/**"] },
+  { ignores: ["**/dist/**", "**/migrations/**", "apps/web/**"] },
   ...tseslint.configs.recommended,
   {
     rules: {

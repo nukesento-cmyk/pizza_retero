@@ -9,3 +9,8 @@ export * as domains from "./domains";
 export * as hours from "./hours";
 export * as catalogue from "./catalogue";
 export * as pricing from "./pricing";
+export * as commerce from "./commerce";
+export * as payments from "./payments";
+export * as outbox from "./outbox";
+export * as orders from "./orders";
+export * as geo from "./geo";

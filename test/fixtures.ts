@@ -5,12 +5,13 @@
 import { and, eq, isNull } from "drizzle-orm";
 import { createDb, schema, type Database } from "../packages/db/src";
 import { uuidv7 } from "../packages/shared/src/ids";
-import { TEST_APP_URL, TEST_OWNER_URL } from "./env";
+import { TEST_APP_URL, TEST_OWNER_URL, TEST_SYSTEM_URL } from "./env";
 
 export function openDbs() {
   const owner = createDb({ url: TEST_OWNER_URL, max: 2, appName: "test-owner" });
   const app = createDb({ url: TEST_APP_URL, max: 4, appName: "test-app" });
-  return { owner: owner.db, app: app.db, close: async () => { await owner.close(); await app.close(); } };
+  const system = createDb({ url: TEST_SYSTEM_URL, max: 4, appName: "test-system" });
+  return { owner: owner.db, app: app.db, system: system.db, close: async () => { await owner.close(); await app.close(); await system.close(); } };
 }
 
 const tag = () => Math.random().toString(36).slice(2, 8);
@@ -67,4 +68,9 @@ export async function expectDbError(p: Promise<unknown>, re: RegExp): Promise<vo
     return;
   }
   throw new Error(`Expected DB error matching ${re}, but the query succeeded`);
+}
+
+/** Open every day, all day (tests must not depend on the wall clock). */
+export async function openAllWeek(owner: Database, brandId: string, branchId: string) {
+  await owner.insert(schema.branchHours).values([0, 1, 2, 3, 4, 5, 6].map((d) => ({ brandId, branchId, dayOfWeek: d, opensAt: "00:00", closesAt: "23:59:59" })));
 }

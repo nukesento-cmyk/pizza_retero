@@ -15,6 +15,7 @@ export default async function BrandLayout({ children, params }: { children: Reac
     { href: `/ops/b/${brandId}/menu`, label: "Menu", show: rbac.can(s.actor, "catalogue.manage", scope) },
     { href: `/ops/b/${brandId}/staff`, label: "Staff", show: rbac.can(s.actor, "staff.read", scope) },
     { href: `/ops/b/${brandId}/domains`, label: "Domains", show: rbac.can(s.actor, "domain.manage", scope) },
+    { href: `/ops/b/${brandId}/payments`, label: "Payments", show: rbac.can(s.actor, "brand.settings.update", scope) },
     { href: `/ops/b/${brandId}/settings`, label: "Settings", show: rbac.can(s.actor, "brand.settings.update", scope) },
   ].filter((t) => t.show);
   return (

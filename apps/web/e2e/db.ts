@@ -21,6 +21,9 @@ export async function activeBranch(tag: string) {
       values (gen_random_uuid(), ${brand!.id}, ${`E2E ${tag} Ltd`}, ${`E2E ${tag}`}, 'active') returning id`;
     const [b] = await sql<{ id: string }[]>`insert into branches (id, brand_id, franchisee_id, slug, name, city, area, status, latitude, longitude)
       values (gen_random_uuid(), ${brand!.id}, ${f!.id}, ${`e2e-${tag}`}, ${`E2E ${tag}`}, 'Nairobi', 'Westlands', 'active', -1.2676, 36.8108) returning id`;
+    for (let d = 0; d < 7; d++) await sql`insert into branch_hours (id, brand_id, branch_id, day_of_week, opens_at, closes_at) values (gen_random_uuid(), ${brand!.id}, ${b!.id}, ${d}, '00:00', '23:59:59')`;
+    await sql`insert into delivery_zones (id, brand_id, branch_id, name, radius_m, fee_minor, eta_minutes) values (gen_random_uuid(), ${brand!.id}, ${b!.id}, 'Inner', 4000, 15000, 35)`;
+    await sql`insert into mpesa_accounts (id, brand_id, franchisee_id, environment, shortcode, credentials_ref) values (gen_random_uuid(), ${brand!.id}, ${f!.id}, 'simulator', '174379', 'MPESA_SIM')`;
     return { brandId: brand!.id, franchiseeId: f!.id, branchId: b!.id };
   } finally {
     await sql.end();
@@ -37,4 +40,13 @@ export async function grantRole(email: string, roleKey: string, scope: { brandId
   } finally {
     await sql.end();
   }
+}
+
+export async function menuItem(slug: string, variantCode = "classic") {
+  const sql = ownerSql();
+  try {
+    const [r] = await sql<{ productId: string; variantId: string }[]>`select p.id as "productId", v.id as "variantId" from products p join product_variants v on v.product_id = p.id
+      join brands b on b.id = p.brand_id where b.slug = 'retero' and p.slug = ${slug} and v.code = ${variantCode}`;
+    return r!;
+  } finally { await sql.end(); }
 }

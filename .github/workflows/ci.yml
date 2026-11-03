@@ -78,6 +78,8 @@ jobs:
           docker run -d --name s3 -p 9100:8333 -v "$PWD/infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro" chrislusf/seaweedfs:3.80 server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
           pnpm --filter web storage:init
       - run: pnpm --filter @retero/core import-catalogue retero --publish
+      - name: Worker single pass
+        run: pnpm --filter @retero/worker once
       - run: pnpm build
       - run: pnpm --filter web exec playwright install --with-deps chromium
       - name: End-to-end (desktop + mobile, includes WebGL journey)

@@ -21,7 +21,7 @@ export default async function setup() {
       DROP TYPE IF EXISTS scope_type, tenant_status CASCADE;
       CREATE SCHEMA public;
       REVOKE CREATE ON SCHEMA public FROM PUBLIC;
-      GRANT USAGE ON SCHEMA public TO retero_app;
+      GRANT USAGE ON SCHEMA public TO retero_app, retero_system;
     `);
   } finally {
     await sql.end();
